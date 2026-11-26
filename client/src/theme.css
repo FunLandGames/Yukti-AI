@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&display=swap');
+@import "tailwindcss";
+@import "tailwindcss-safe-area";
+
+@theme {
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-lg: 18px;
+  --text-lg--line-height: 28px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 36px;
+  --text-4xl: 36px;
+  --text-4xl--line-height: 40px;
+  --text-5xl: 48px;
+  --text-5xl--line-height: 52px;
+  --font-display: "Orbitron", "Segoe UI", system-ui, sans-serif;
+}
+
+/* QWARA AI is a dark JARVIS-style interface by design (per the product brief),
+   in both system modes. */
+:root {
+  color-scheme: dark;
+  --bg: #050a12;
+  --surface: #0a141f;
+  --surface2: #0e1c2b;
+  --text: #d7f3fa;
+  --dim: #7d99a8;
+  --border: #17364a;
+  --accent: #22d3ee;
+  --accent2: #e879f9;
+  --warn: #fbbf24;
+  --danger: #fb7185;
+  --good: #34d399;
+  --radius: 12px;
+  --space-surface: var(--surface);
+  --space-surface-alt: var(--surface2);
+  --space-muted: var(--dim);
+  --space-border: var(--border);
+  --space-accent: var(--accent);
+}
+
+@layer base {
+  button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) {
+    min-height: 2.25rem;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.panel-raised {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.neon-text {
+  color: var(--accent);
+  text-shadow: 0 0 6px rgba(34, 211, 238, 0.25);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #04222b;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+}
+.btn-primary:disabled { opacity: 0.5; }
+
+.btn-ghost {
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 0.5rem 0.9rem;
+  background: var(--surface2);
+}
+.btn-ghost:disabled { opacity: 0.5; }
+
+.input-dark {
+  background: #071018;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  color: var(--text);
+  width: 100%;
+}
+.input-dark::placeholder { color: var(--dim); }
+.input-dark:focus { outline: 2px solid var(--accent); outline-offset: 0; }
+
+/* Arc-reactor style status ring (pure CSS, cheap to render). */
+.reactor {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  border-radius: 9999px;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.2), inset 0 0 10px rgba(34, 211, 238, 0.15);
+}
+.reactor::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 9999px;
+  border: 1px dashed rgba(34, 211, 238, 0.6);
+}
+.reactor::after {
+  content: "";
+  position: absolute;
+  inset: 30px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #a5f3fc 0%, #22d3ee 55%, rgba(34, 211, 238, 0.15) 100%);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.8);
+}
+.reactor.listening {
+  animation: reactor-pulse 1.6s ease-in-out infinite;
+}
+@keyframes reactor-pulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(34, 211, 238, 0.35), inset 0 0 14px rgba(34, 211, 238, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(34, 211, 238, 0.75), inset 0 0 22px rgba(34, 211, 238, 0.45); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reactor.listening { animation: none; }
+}
+
+.dot-live {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--good);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+}
+
+pre.codeblock {
+  background: #04090f;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
