@@ -1,30 +1,77 @@
 name: Build Android APK
 
+# Builds a debug APK of Yukti AI on every push to main, and on demand from
+# the Actions tab ("Run workflow"). Download the result from the finished
+# run's Artifacts section — it is named "Yukti-AI-APK".
+#
+# How this works: the Yukti AI web app is hosted online, and the APK is a
+# native shell that opens the live app (see server.url in
+# capacitor.config.ts). The hosted web bundle is built by the Muse
+# platform and cannot be rebuilt here — the app depends on the
+# platform-internal @hatch/space-sdk package, which is not published.
+# So this workflow does not build the web app. It removes that one
+# platform-only dependency for this job, installs the Capacitor tooling,
+# creates a small local fallback page, and builds the Android APK.
+
 on:
+  workflow_dispatch:
   push:
     branches: [main]
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: actions/setup-java@v4
+
+      - name: Set up Java 17 (for the Android/Gradle build)
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-      - run: npm install
-      - run: npm run build
-      - run: |
-          if [ ! -d android ]; then npx cap add android; fi
-      - run: npx cap sync android
-      - working-directory: android
+
+      - name: Remove the platform-only dependency (APK shell does not need it)
+        run: npm pkg delete dependencies.@hatch/space-sdk
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create the local fallback web page
+        run: |
+          mkdir -p client/dist
+          cat > client/dist/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Yukti AI</title>
+          </head>
+          <body style="background:#05060f;color:#e8e8f0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
+          <p>Loading Yukti AI…</p>
+          <script>location.replace("https://c2207205-bb37-4592-b67e-a774705a824d.spaces.muse.ai/");</script>
+          </body>
+          </html>
+          EOF
+
+      - name: Add the Android platform (first run only)
+        run: if [ ! -d android ]; then npx cap add android; fi
+
+      - name: Sync web app into the Android project
+        run: npx cap sync android
+
+      - name: Build the debug APK
+        working-directory: android
         run: ./gradlew assembleDebug
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v4
         with:
           name: Yukti-AI-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
