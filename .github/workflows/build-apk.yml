@@ -30,11 +30,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Set up Java 17 (for the Android/Gradle build)
+      - name: Set up Java 21 (for the Android/Gradle build)
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: Remove the platform-only dependency (APK shell does not need it)
         run: npm pkg delete dependencies.@hatch/space-sdk
